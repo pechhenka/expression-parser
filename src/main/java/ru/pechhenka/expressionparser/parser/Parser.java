@@ -1,11 +1,11 @@
 package ru.pechhenka.expressionparser.parser;
 
 
-import ru.pechhenka.expressionparser.TripleExpression;
+import ru.pechhenka.expressionparser.Expression;
 
 /**
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)
  */
 public interface Parser {
-    TripleExpression parse(String expression);
+    Expression parse(String expression);
 }

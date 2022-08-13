@@ -1,5 +1,7 @@
 package ru.pechhenka.expressionparser;
 
+import ru.pechhenka.expressionparser.operand.*;
+
 public class Main {
     public static void main(String[] args) {
         int x = Integer.parseInt(args[0]);

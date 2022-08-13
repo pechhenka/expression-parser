@@ -1,6 +1,10 @@
 package ru.pechhenka.expressionparser.parser;
 
 import ru.pechhenka.expressionparser.*;
+import ru.pechhenka.expressionparser.operand.*;
+
+import java.util.Map;
+import java.util.Set;
 
 public class ExpressionParser extends BaseParser implements Parser {
 
@@ -23,71 +27,85 @@ public class ExpressionParser extends BaseParser implements Parser {
 
      */
 
-    public TripleExpression parse(String expression) {
+    public Expression parse(final String expression) {
         this.source = new StringSource(expression);
 
         nextChar();
-        TripleExpression result = parseL();
+        final Operand result = parseL();
         if (eof()) {
-            return result;
+            return new Expression() {
+                @Override
+                public int evaluate(final Map<String, Integer> values) {
+                    return result.evaluate(values);
+                }
+
+                @Override
+                public Set<String> getVariables() {
+                    return null;
+                }
+            };
         }
 
         throw error("Expected end of input, actual: '" + ch + '\'');
     }
 
-    private TripleExpression parseL() {
+    public static Expression parseExpression(final String expression) {
+        return new ExpressionParser().parse(expression);
+    }
+
+    private Operand parseL() {
         return parseLogicOperation('|');
     }
 
-    private TripleExpression parseE() {
-        TripleExpression left = parseT();
+    private Operand parseE() {
+        Operand left = parseT();
 
         while (!test(END)) {
             skipWhiteSpace();
-            char op = ch;
+            final char op = ch;
             if (op != '+' && op != '-') {
                 break;
             }
             nextChar();
 
-            TripleExpression right = parseT();
+            final Operand right = parseT();
             if (op == '+') {
-                left = new Add((Operand) left, (Operand) right);
+                left = new Add(left, right);
             } else if (op == '-') {
-                left = new Subtract((Operand) left, (Operand) right);
+                left = new Subtract(left, right);
             }
         }
         return left;
     }
 
-    private TripleExpression parseT() {
-        TripleExpression left = parseF();
+    private Operand parseT() {
+        Operand left = parseF();
 
         while (!test(END)) {
             skipWhiteSpace();
-            char op = ch;
+            final char op = ch;
             if (op != '*' && op != '/') {
                 break;
             }
             nextChar();
 
-            TripleExpression right = parseF();
+            final Operand right = parseF();
             if (op == '*') {
-                left = new Multiply((Operand) left, (Operand) right);
+                left = new Multiply(left, right);
             } else if (op == '/') {
-                left = new Divide((Operand) left, (Operand) right);
+                left = new Divide(left, right);
             }
         }
         return left;
     }
 
-    private TripleExpression parseF() {
+    private Operand parseF() {
         skipWhiteSpace();
 
         if (isDigit()) {
             return parseConst();
         } else if (test('(')) {
-            TripleExpression lowestLevel = parseL();
+            final Operand lowestLevel = parseL();
             if (!test(')')) {
                 throw error("expected ')'");
             }
@@ -101,7 +119,7 @@ public class ExpressionParser extends BaseParser implements Parser {
         throw new IllegalStateException("wrong state");
     }
 
-    private TripleExpression parseU() {
+    private Operand parseU() {
 
         if (!test('-')) {
             throw error("wrong state");
@@ -111,41 +129,41 @@ public class ExpressionParser extends BaseParser implements Parser {
         if (isDigit()) {
             return parseNegativeConst();
         } else if (test('(')) {
-            TripleExpression lowestLevel = parseL();
+            final Operand lowestLevel = parseL();
             if (!test(')')) {
                 throw error("wrong state");
             }
-            return new UnaryMinus((Operand) lowestLevel);
+            return new UnaryMinus(lowestLevel);
         } else if (isLetter()) {
             return new UnaryMinus(new Variable(readVariable()));
         }
-        return new UnaryMinus((Operand) parseU());
+        return new UnaryMinus(parseU());
     }
 
-    private TripleExpression parseLogicOperation(final char operation) {
-        TripleExpression left = getLogicLowerOperation(operation);
+    private Operand parseLogicOperation(final char operation) {
+        Operand left = getLogicLowerOperation(operation);
 
         while (!test(END)) {
             skipWhiteSpace();
-            char op = ch;
+            final char op = ch;
             if (op != operation) {
                 break;
             }
             nextChar();
 
-            TripleExpression right = getLogicLowerOperation(operation);
+            final Operand right = getLogicLowerOperation(operation);
             if (op == '|') {
-                left = new LogicOR((Operand) left, (Operand) right);
+                left = new LogicOR(left, right);
             } else if (op == '^') {
-                left = new LogicXOR((Operand) left, (Operand) right);
+                left = new LogicXOR(left, right);
             } else if (op == '&') {
-                left = new LogicAND((Operand) left, (Operand) right);
+                left = new LogicAND(left, right);
             }
         }
         return left;
     }
 
-    private TripleExpression getLogicLowerOperation(final char operation) {
+    private Operand getLogicLowerOperation(final char operation) {
         if (operation == '|') {
             return parseLogicOperation('^');
         } else if (operation == '^') {
@@ -155,13 +173,13 @@ public class ExpressionParser extends BaseParser implements Parser {
         }
     }
 
-    private TripleExpression parseConst() {
-        String value = readDigits();
+    private Operand parseConst() {
+        final String value = readDigits();
         return new Const(Integer.parseInt(value));
     }
 
-    private TripleExpression parseNegativeConst() {
-        String value = readDigits();
+    private Operand parseNegativeConst() {
+        final String value = readDigits();
         return new Const(Integer.parseInt('-' + value));
     }
 
