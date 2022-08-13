@@ -22,6 +22,11 @@ public class StringSource implements CharSource {
     }
 
     @Override
+    public void undo(final int count) {
+        pos -= count;
+    }
+
+    @Override
     public ParseException error(final String message) {
         return new ParseException(pos + ": " + message);
     }

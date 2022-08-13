@@ -2,6 +2,8 @@ package ru.pechhenka.expressionparser;
 
 import ru.pechhenka.expressionparser.operand.*;
 
+import java.util.Map;
+
 public class Main {
     public static void main(String[] args) {
         int x = Integer.parseInt(args[0]);
@@ -15,7 +17,7 @@ public class Main {
                         new Variable("x")
                 ),
                 new Const(3)
-        ).evaluate(5));
+        ).evaluate(Map.of("x", 5)));
         System.out.println(new Subtract(
                 new Multiply(
                         new Const(2),
@@ -40,7 +42,7 @@ public class Main {
                                 )
                         ),
                         new Const(1)
-                ).evaluate(x)
+                ).evaluate(Map.of("x", 1))
         );
     }
 }

@@ -4,31 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1a1177a5-236b-4a69-99a7-866bd3905178" name="Changes" comment="copy project">
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/operand/Const.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/operand/Operand.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/operand/Variable.java" afterDir="false" />
+    <list default="true" id="1a1177a5-236b-4a69-99a7-866bd3905178" name="Changes" comment="refactor">
+      <change afterPath="$PROJECT_DIR$/src/test/java/TestExpression.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/Abs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/operand/Abs.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/Add.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/operand/Add.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/BinaryExpression.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/operand/BinaryOperand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/Const.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/Divide.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/operand/Divide.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/Expression.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/Expression.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/LogicAND.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/operand/LogicAND.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/LogicOR.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/operand/LogicOR.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/LogicXOR.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/operand/LogicXOR.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/Multiply.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/operand/Multiply.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/Operand.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/Sqrt.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/operand/Sqrt.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/Subtract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/operand/Subtract.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/ToMiniString.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/TripleExpression.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/UnaryMinus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/operand/UnaryMinus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/Variable.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/parser/ExpressionParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/parser/ExpressionParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/parser/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ru/pechhenka/expressionparser/parser/Parser.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,7 +61,7 @@
       <option name="presentableId" value="Default" />
       <updated>1660398865147</updated>
       <workItem from="1660398870281" duration="735000" />
-      <workItem from="1660399653208" duration="3589000" />
+      <workItem from="1660399653208" duration="4422000" />
     </task>
     <task id="LOCAL-00001" summary="copy project">
       <created>1660400681599</created>
@@ -91,7 +70,14 @@
       <option name="project" value="LOCAL" />
       <updated>1660400681599</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="refactor">
+      <created>1660403430791</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1660403430791</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -110,6 +96,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="copy project" />
-    <option name="LAST_COMMIT_MESSAGE" value="copy project" />
+    <MESSAGE value="refactor" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor" />
   </component>
 </project>

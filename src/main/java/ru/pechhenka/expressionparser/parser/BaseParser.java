@@ -20,6 +20,18 @@ public class BaseParser {
         return false;
     }
 
+    protected boolean test(final String expected) {
+        for (int i = 0; i < expected.length(); i++) {
+            if (ch == expected.charAt(i)) {
+                nextChar();
+            } else {
+                undo(i);
+                return false;
+            }
+        }
+        return true;
+    }
+
     protected void expect(final char c) {
         if (ch != c) {
             throw error("Expected '%s', found '%s'".formatted(c, ch));
@@ -32,6 +44,12 @@ public class BaseParser {
             expect(c);
         }
     }
+
+    private void undo(final int count) {
+        source.undo(count);
+    }
+
+
 
     protected boolean eof() {
         return test(END);

@@ -5,6 +5,10 @@ package ru.pechhenka.expressionparser.parser;
  */
 public interface CharSource {
     boolean hasNext();
+
+    void undo(int count);
+
     char next();
+
     ParseException error(final String message);
 }

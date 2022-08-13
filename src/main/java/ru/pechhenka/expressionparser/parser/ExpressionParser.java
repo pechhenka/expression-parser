@@ -3,8 +3,13 @@ package ru.pechhenka.expressionparser.parser;
 import ru.pechhenka.expressionparser.*;
 import ru.pechhenka.expressionparser.operand.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BinaryOperator;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 public class ExpressionParser extends BaseParser implements Parser {
 
@@ -31,7 +36,7 @@ public class ExpressionParser extends BaseParser implements Parser {
         this.source = new StringSource(expression);
 
         nextChar();
-        final Operand result = parseL();
+        final Operand result = parseExpression();
         if (eof()) {
             return new Expression() {
                 @Override
@@ -43,6 +48,10 @@ public class ExpressionParser extends BaseParser implements Parser {
                 public Set<String> getVariables() {
                     return null;
                 }
+
+                public String toString() {
+                    return result.toString();
+                }
             };
         }
 
@@ -53,134 +62,77 @@ public class ExpressionParser extends BaseParser implements Parser {
         return new ExpressionParser().parse(expression);
     }
 
-    private Operand parseL() {
-        return parseLogicOperation('|');
+    private Operand parseExpression() {
+        return parseOR();
     }
 
-    private Operand parseE() {
-        Operand left = parseT();
-
-        while (!test(END)) {
-            skipWhiteSpace();
-            final char op = ch;
-            if (op != '+' && op != '-') {
-                break;
-            }
-            nextChar();
-
-            final Operand right = parseT();
-            if (op == '+') {
-                left = new Add(left, right);
-            } else if (op == '-') {
-                left = new Subtract(left, right);
-            }
-        }
-        return left;
+    private Operand parseOR() {
+        return parseInfixLeft(this::parseXOR, LogicOR::new, "|");
     }
 
-    private Operand parseT() {
-        Operand left = parseF();
-
-        while (!test(END)) {
-            skipWhiteSpace();
-            final char op = ch;
-            if (op != '*' && op != '/') {
-                break;
-            }
-            nextChar();
-
-            final Operand right = parseF();
-            if (op == '*') {
-                left = new Multiply(left, right);
-            } else if (op == '/') {
-                left = new Divide(left, right);
-            }
-        }
-        return left;
+    private Operand parseXOR() {
+        return parseInfixLeft(this::parseAND, LogicXOR::new, "^");
     }
 
-    private Operand parseF() {
+    private Operand parseAND() {
+        return parseInfixLeft(this::parseAdd, LogicAND::new, "&");
+    }
+
+    private Operand parseAdd() {
+        return parseInfixLeft(this::parseSubtract, Add::new, "+");
+    }
+
+    private Operand parseSubtract() {
+        return parseInfixLeft(this::parseMultiply, Subtract::new, "-");
+    }
+
+    private Operand parseMultiply() {
+        return parseInfixLeft(this::parseDivide, Multiply::new, "*");
+    }
+
+    private Operand parseDivide() {
+        return parseInfixLeft(this::parseNegate, Divide::new, "/");
+    }
+
+    private Operand parseNegate() {
+        return parseUnary(this::parseLeaf, Negate::new, "-");
+    }
+
+    private Operand parseLeaf() {
         skipWhiteSpace();
-
+        if (test('(')) {
+            final Operand e = parseExpression();
+            skipWhiteSpace();
+            expect(')');
+            return e;
+        }
+        if (isLetter()) {
+            return parseVariable();
+        }
         if (isDigit()) {
             return parseConst();
-        } else if (test('(')) {
-            final Operand lowestLevel = parseL();
-            if (!test(')')) {
-                throw error("expected ')'");
-            }
-            return lowestLevel;
-        } else if (ch == '-') {
-            return parseU();
-        } else if (isLetter()) {
-            return new Variable(readVariable());
         }
-
-        throw new IllegalStateException("wrong state");
+        throw error("Illegal state");
     }
 
-    private Operand parseU() {
-
-        if (!test('-')) {
-            throw error("wrong state");
+    private Operand parseVariable() {
+        if (!isLetter()) {
+            throw error("Variable not started by letter");
         }
 
-        skipWhiteSpace();
-        if (isDigit()) {
-            return parseNegativeConst();
-        } else if (test('(')) {
-            final Operand lowestLevel = parseL();
-            if (!test(')')) {
-                throw error("wrong state");
-            }
-            return new UnaryMinus(lowestLevel);
-        } else if (isLetter()) {
-            return new UnaryMinus(new Variable(readVariable()));
-        }
-        return new UnaryMinus(parseU());
-    }
-
-    private Operand parseLogicOperation(final char operation) {
-        Operand left = getLogicLowerOperation(operation);
-
-        while (!test(END)) {
-            skipWhiteSpace();
-            final char op = ch;
-            if (op != operation) {
-                break;
-            }
+        final StringBuilder sb = new StringBuilder();
+        while (isLetter() || isDigit()) {
+            sb.append(ch);
             nextChar();
-
-            final Operand right = getLogicLowerOperation(operation);
-            if (op == '|') {
-                left = new LogicOR(left, right);
-            } else if (op == '^') {
-                left = new LogicXOR(left, right);
-            } else if (op == '&') {
-                left = new LogicAND(left, right);
-            }
         }
-        return left;
+
+        return new Variable(sb.toString());
     }
 
-    private Operand getLogicLowerOperation(final char operation) {
-        if (operation == '|') {
-            return parseLogicOperation('^');
-        } else if (operation == '^') {
-            return parseLogicOperation('&');
-        } else {
-            return parseE();
-        }
-    }
 
     private Operand parseConst() {
         final String value = readDigits();
         return new Const(Integer.parseInt(value));
-    }
-
-    private Operand parseNegativeConst() {
-        final String value = readDigits();
-        return new Const(Integer.parseInt('-' + value));
     }
 
 
@@ -188,17 +140,6 @@ public class ExpressionParser extends BaseParser implements Parser {
         while (Character.isWhitespace(ch)) {
             nextChar();
         }
-    }
-
-    private String readVariable() {
-        final StringBuilder sb = new StringBuilder();
-
-        do {
-            sb.append(ch);
-            nextChar();
-        } while (isLetter());
-
-        return sb.toString();
     }
 
     private String readDigits() {
@@ -218,5 +159,56 @@ public class ExpressionParser extends BaseParser implements Parser {
 
     private boolean isDigit() {
         return Character.isDigit(ch);
+    }
+
+    private Operand parseInfixLeft(final Supplier<Operand> nextParser,
+                                   final BinaryOperator<Operand> buildExpression,
+                                   final String operation) {
+        Operand left = nextParser.get();
+
+        while (!eof()) {
+            skipWhiteSpace();
+            if (!test(operation)) {
+                break;
+            }
+
+            final Operand right = nextParser.get();
+            left = buildExpression.apply(left, right);
+        }
+
+        return left;
+    }
+
+    private Operand parseInfixRight(final Supplier<Operand> nextParser,
+                                    final BinaryOperator<Operand> buildExpression,
+                                    final String operation) {
+        final ArrayList<Operand> expressions = new ArrayList<>(1);
+        expressions.add(nextParser.get());
+
+        while (!eof()) {
+            skipWhiteSpace();
+            if (!test(operation)) {
+                break;
+            }
+
+            expressions.add(nextParser.get());
+        }
+
+        Collections.reverse(expressions);
+        Operand res = expressions.get(0);
+        for (int i = 1; i < expressions.size(); i++) {
+            res = buildExpression.apply(expressions.get(i), res);
+        }
+        return res;
+    }
+
+    private Operand parseUnary(final Supplier<Operand> nextParser,
+                               final UnaryOperator<Operand> buildExpression,
+                               final String operation) {
+        skipWhiteSpace();
+        if (test(operation)) {
+            return buildExpression.apply(parseUnary(nextParser, buildExpression, operation));
+        }
+        return nextParser.get();
     }
 }
