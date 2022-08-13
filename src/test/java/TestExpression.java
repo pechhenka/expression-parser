@@ -46,6 +46,6 @@ public class TestExpression {
     }
 
     private static void assertParse(final String expected, final String expression) {
-        Assertions.assertEquals(expected, ExpressionParser.parseExpression(expression).toString());
+        Assertions.assertEquals(expected, ExpressionParser.parse(expression).toString());
     }
 }

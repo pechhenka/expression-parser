@@ -32,7 +32,7 @@ public class ExpressionParser extends BaseParser implements Parser {
 
      */
 
-    public Expression parse(final String expression) {
+    public Expression parseExpression(final String expression) {
         this.source = new StringSource(expression);
 
         nextChar();
@@ -58,8 +58,8 @@ public class ExpressionParser extends BaseParser implements Parser {
         throw error("Expected end of input, actual: '" + ch + '\'');
     }
 
-    public static Expression parseExpression(final String expression) {
-        return new ExpressionParser().parse(expression);
+    public static Expression parse(final String expression) {
+        return new ExpressionParser().parseExpression(expression);
     }
 
     private Operand parseExpression() {
